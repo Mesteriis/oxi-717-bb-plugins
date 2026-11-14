@@ -9,7 +9,7 @@ export type VpnEvidence=Omit<FileVpnEvidence,'assurance'> & {assurance:FileVpnEv
 // Only OS observations: no shell, network probes, VPN controls or state files.
 export type Reader=(file:string,args:string[])=>Promise<string>;
 export const readCommand:Reader=(file,args)=>new Promise((resolve,reject)=>{
-  execFile(file,args,{timeout:1200,maxBuffer:1048576,encoding:'utf8',env:{...process.env,LC_ALL:'C'}},
+  execFile(file,args,{timeout:1200,maxBuffer:1048576,encoding:'utf8',env:{...process.env,LC_ALL:'C',...(file===TAILSCALE?{TAILSCALE_BE_CLI:'1'}:{})}},
     (error,stdout)=>error?reject(Error('VPN state command unavailable')):resolve(stdout));
 });
 const unknown=():VpnEvidence=>({state:'unknown',assurance:'invalid',reason:'invalid_evidence',updatedAt:null,probeAt:null});
